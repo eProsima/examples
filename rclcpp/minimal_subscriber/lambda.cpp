@@ -16,7 +16,7 @@
 #include <memory>
 
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
+#include "rcl_interfaces/msg/log.hpp"
 
 class MinimalSubscriber : public rclcpp::Node
 {
@@ -24,16 +24,18 @@ public:
   MinimalSubscriber()
   : Node("minimal_subscriber")
   {
-    subscription_ = this->create_subscription<std_msgs::msg::String>(
-      "topic",
+    subscription_ = this->create_subscription<rcl_interfaces::msg::Log>(
+      "/rosout",
       10,
-      [this](std_msgs::msg::String::UniquePtr msg) {
-        RCLCPP_INFO(this->get_logger(), "I heard: '%s'", msg->data.c_str());
+      [this](rcl_interfaces::msg::Log::UniquePtr msg) {
+        RCLCPP_INFO(this->get_logger(), "I heard: '%s'", msg->msg.c_str());
       });
+
+    RCLCPP_INFO(this->get_logger(), "Started");
   }
 
 private:
-  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
+  rclcpp::Subscription<rcl_interfaces::msg::Log>::SharedPtr subscription_;
 };
 
 int main(int argc, char * argv[])
